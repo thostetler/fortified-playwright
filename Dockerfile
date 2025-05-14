@@ -1,21 +1,20 @@
 FROM browserless/chrome:latest
 
-# Use root to install stuff and fix permissions
 USER root
 
-# Optional: install tools
+# Optional tools
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-# Set up working directory with correct ownership
-RUN mkdir -p /home/chrome/app && chown -R 1000:1000 /home/chrome/app
+WORKDIR /usr/src/app
 
-# Drop to the non-root user that *does* exist
-USER chrome
-WORKDIR /home/chrome/app
+# Install Playwright Extra
+RUN npm install playwright-extra playwright-extra-plugin-stealth
 
-# Install extra packages
-RUN npm init -y && \
-    npm install playwright-extra playwright-extra-plugin-stealth
-
-# Copy function script
+# Copy the function override
 COPY function-script.js /usr/src/app/function-script.js
+
+# Fix ownership (use UID:GID instead of username)
+RUN chown -R 1000:1000 /usr/src/app
+
+# Keep using root or switch to UID directly if needed
+# USER 1000
