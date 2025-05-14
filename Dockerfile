@@ -1,3 +1,3 @@
 FROM ghcr.io/browserless/chromium:latest
 
-npm install playwright-extra playwright-extra-plugin-stealth
+RUN npm install playwright-extra playwright-extra-plugin-stealth
