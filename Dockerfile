@@ -1,19 +1,21 @@
 FROM browserless/chrome:latest
 
+# Use root to install stuff and fix permissions
 USER root
 
-# System deps (optional)
+# Optional: install tools
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-# Ensure working directory exists and is owned by chrome user
-RUN mkdir -p /home/chrome/app && chown -R chrome:chrome /home/chrome/app
+# Set up working directory with correct ownership
+RUN mkdir -p /home/chrome/app && chown -R 1000:1000 /home/chrome/app
 
+# Drop to the non-root user that *does* exist
 USER chrome
 WORKDIR /home/chrome/app
 
-# Init and install your packages
+# Install extra packages
 RUN npm init -y && \
     npm install playwright-extra playwright-extra-plugin-stealth
 
-# Copy custom script into place
-COPY --chown=chrome:chrome function-script.js /usr/src/app/function-script.js
+# Copy function script
+COPY function-script.js /usr/src/app/function-script.js
